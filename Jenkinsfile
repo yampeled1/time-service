@@ -1,29 +1,27 @@
 
-version="1.0.0"
-repository="time-service"
-tag="latest"
-image="${repository}:${version}.${env.BUILD_NUMBER}"
-namespace="apps"
-
-podTemplate(label: 'demo-pipeline-pod', cloud: 'kubernetes', serviceAccount: 'jenkins',
-  containers: [
-    containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent:4.11.2-4', ttyEnabled: false, command: 'sleep'),
-    containerTemplate(name: 'docker', image: 'docker:git', ttyEnabled: true, command: 'cat', privileged: true)
-  ],
-  volumes: [
-    hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')
-  ]) {
-    node('demo-customer-pod') {
-        stage('Prepare') {
-            checkout scm
-        }
-
-        stage('Build Docker Image') {
-            container('docker') {
-                sh """
-                  docker build -t ${image} .
-                """
-            }
-        }
+pipeline {
+  agent {
+    kubernetes {
+      label 'multiple labels'
+      containerTemplate {
+        name 'docker'
+        image 'docker:git'
+        command 'sleep'
+        args '9999999'
+      }
+      podRetention onFailure()
     }
+  }
+  environment {
+    CONTAINER_ENV_VAR = 'container-env-var-value'
+  }
+  stages {
+    stage('Run maven') {
+      steps {
+        sh 'git clone https://github.com/yampeled1/time-service.git'
+        sh 'docker build .'
+        }
+      }
+    }
+  }
 }
