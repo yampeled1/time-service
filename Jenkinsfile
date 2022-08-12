@@ -1,26 +1,52 @@
-
 pipeline {
   agent {
     kubernetes {
-      label 'multiple labels'
-      containerTemplate {
-        name 'docker'
-        image 'docker:git'
-        command 'sleep'
-        args '9999999'
-      }
-      podRetention onFailure()
-    }
-  }
-  environment {
-    CONTAINER_ENV_VAR = 'container-env-var-value'
-  }
+      label 'service-demo'
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+  component: ci
+spec:
+  serviceAccountName: jenkins
+  containers:
+  - name: maven
+    image: maven:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+      - mountPath: "/root/.m2"
+        name: m2
+  - name: docker
+    image: docker:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: docker-sock
+  volumes:
+    - name: docker-sock
+      hostPath:
+        path: /var/run/docker.sock
+    - name: m2
+      persistentVolumeClaim:
+        claimName: m2
+"""
+}
+   }
   stages {
-    stage('Run maven') {
+    stage('Build') {
       steps {
-        sh 'git clone https://github.com/yampeled1/time-service.git'
-        sh 'docker build .'
+        container('docker') {
+          sh """
+             docker build -t time-service:$BUILD_NUMBER .
+          """
         }
       }
     }
   }
+}
