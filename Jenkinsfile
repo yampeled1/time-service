@@ -12,14 +12,6 @@ labels:
 spec:
   serviceAccountName: yamp-jenkins
   containers:
-  - name: maven
-    image: maven:latest
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-      - mountPath: "/root/.m2"
-        name: m2
   - name: docker
     image: docker:latest
     command:
