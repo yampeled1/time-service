@@ -10,7 +10,7 @@ metadata:
 labels:
   component: ci
 spec:
-  serviceAccountName: jenkins
+  serviceAccountName: yamp-jenkins
   containers:
   - name: maven
     image: maven:latest
