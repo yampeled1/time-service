@@ -26,6 +26,8 @@ Navigate to new item -> choose pipeline name -> Multibranch pipeline -> ok
 
 In the pipeline configuration under Branch sources -> git -> add the *REPO URL* and add credentials for pulling the code
 
+In the Jenkinsfile, change the SA on line 13 to [release-name]-jenkins and change the remote-registry on lines 46,48 to your registry
+
 ### Cluster Prerequisites
 For authenticating against GCR create IAM role with sufficient permissions to push & pull from the registry, create and download locally the SA and create k8s secret with it's data:
 ```
@@ -51,10 +53,10 @@ And you should see the job runs the full cycle
 for viewing your app
 ```
 1. Get the application URL by running these commands:
-  export POD_NAME=$(kubectl get pods --namespace ma-services -l "app.kubernetes.io/name=services,app.kubernetes.io/instance=services" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace ma-services $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  export POD_NAME=$(kubectl get pods --namespace *your-namespace* -l "app.kubernetes.io/name=services,app.kubernetes.io/instance=services" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace *your-namespace* $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
   echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace ma-services port-forward $POD_NAME 8080:$CONTAINER_PORT
+  kubectl --namespace *your-namespace* port-forward $POD_NAME 8080:$CONTAINER_PORT
 ```
 ## Versioning
 
