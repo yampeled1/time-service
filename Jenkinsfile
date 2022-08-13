@@ -50,7 +50,7 @@ spec:
           }
         container('helm') {
           sh """
-            helm upgrade --namespace ma-services services services --set image.repo=europe-west2-docker.pkg.dev/yamp-playground/yamp-registry/time-service --set image.tag=${BUILD_NUMBER}
+            helm upgrade -i --namespace ma-services services services --set image.repo=europe-west2-docker.pkg.dev/yamp-playground/yamp-registry/time-service --set image.tag=${BUILD_NUMBER}
           """
           }
         }
